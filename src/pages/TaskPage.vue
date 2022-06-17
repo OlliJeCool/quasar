@@ -1,10 +1,12 @@
 
 <template>
-  <br>
-  <p>Create new task</p>
   <div class="q-pa-md" style="max-width: 400px">
-
-    <q-form
+    <q-btn label="Create task" color="primary" @click="create = true" />
+      <q-dialog v-model="create">
+        <q-card>
+          <q-card-section>
+            <div>
+                <q-form
       @submit="createTask()"
       @reset="onReset()"
       class="q-gutter-md"
@@ -32,9 +34,12 @@
         <q-btn @click="createTask()" label="Submit" type="submit" color="primary"/>
       </div>
       </div>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+  </div>
+
     <div class="q-pa-md" style="max-width: 100%">
-      <button @click="mounted()">Get tasks</button>
-      <br>
     <q-list bordered class="rounded-borders">
       <div v-for="task in tasks" :key="task.id">
       <q-expansion-item
@@ -45,15 +50,14 @@
       >
         <q-card>
           <q-card-section>
-            {{ task.description }}
+            Description: {{ task.description }}
           </q-card-section>
           <q-card-section>
             <q-fab padding="8px" color="secondary" push icon="keyboard_arrow_right" direction="right">
               <q-fab-action color="primary" @click="completeTask(task.id)" icon="done" />
               <q-fab-action color="red" @click="deleteTask(task.id)" icon="delete" />
             </q-fab>
-            <div class="q-pa-md">
-              <q-btn-dropdown width="50px" color="primary" label="Add to list">
+              <q-btn-dropdown width="50px" color="primary" label="Add to list" align="right" autoclose="true">
                 <q-list>
                   <div v-for="list in lists" :key="list.id">
                     <q-item clickable v-close-popup @click="addToList(task.id, list.id)">
@@ -64,7 +68,6 @@
                   </div>
                 </q-list>
               </q-btn-dropdown>
-            </div>
           </q-card-section>
         </q-card>
       </q-expansion-item>
@@ -76,6 +79,14 @@
 <script>
 
 export default {
+  mounted () {
+    this.getTasks()
+    this.getLists()
+  },
+  updated () {
+    this.getTasks()
+    this.getLists()
+  },
   methods: {
     async getTasks () {
       const tasks = await this.$axios.get('https://localhost:7096/Task/GetTasks')
@@ -86,6 +97,7 @@ export default {
       await this.$axios.post('https://localhost:7096/Task/delete', {
         id: input
       })
+      this.getTasks()
     },
     async completeTask (input) {
       await this.$axios.post('https://localhost:7096/Task/complete', {
@@ -97,6 +109,8 @@ export default {
         name: this.newtask.name,
         description: this.newtask.description
       })
+      this.getTasks()
+      this.create = false
     },
     async getLists () {
       const listnames = await this.$axios.get('https://localhost:7096/List/getAll')
@@ -108,17 +122,14 @@ export default {
         ids: taskid,
         listId: listid
       })
-    },
-    mounted () {
-      this.getTasks()
-      this.getLists()
     }
   },
   data () {
     return {
       tasks: '',
       newtask: { name: '', description: '' },
-      lists: ''
+      lists: '',
+      create: false
     }
   }
 }

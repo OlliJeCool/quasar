@@ -1,15 +1,12 @@
 
 <template>
-  
-  <button @click="getLists()">Get lists free here!</button>
   <div v-for="names in listnames" :key="names.id">
     <h5>
       {{ names.name }}
     </h5>
-    <q-btn @click="loadTasks(names.id)">Get tasks</q-btn>
     <div class="q-pa-md" style="max-width: 100%">
     <q-list bordered class="rounded-borders">
-      <div v-for="task in lists" :key="task.id">
+      <div v-for="task in loadTasks(names.id)" :key="task.id">
         {{ task.name }}
       </div>
       </q-list>
@@ -19,6 +16,9 @@
 
 <script>
 export default {
+  mounted () {
+    this.getLists()
+  },
   methods: {
     async getLists () {
       const listnames = await this.$axios.get('https://localhost:7096/List/getAll')
@@ -28,7 +28,7 @@ export default {
     async loadTasks (input) {
       const lists = await this.$axios.get('https://localhost:7096/List/getlist/' + input)
       console.log(lists.data)
-      this.lists = lists.data
+      return lists.data
     }
   },
   data () {
