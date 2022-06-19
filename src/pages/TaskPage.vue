@@ -57,6 +57,7 @@
               <q-fab-action color="primary" @click="completeTask(task.id)" icon="done" />
               <q-fab-action color="red" @click="deleteTask(task.id)" icon="delete" />
             </q-fab>
+            <div style="margin-left: 1700px;">
               <q-btn-dropdown width="50px" color="primary" label="Add to list" align="right" autoclose="true">
                 <q-list>
                   <div v-for="list in lists" :key="list.id">
@@ -68,6 +69,7 @@
                   </div>
                 </q-list>
               </q-btn-dropdown>
+              </div>
           </q-card-section>
         </q-card>
       </q-expansion-item>
@@ -126,6 +128,7 @@ export default {
   },
   data () {
     return {
+      taskslist: {},
       tasks: '',
       newtask: { name: '', description: '' },
       lists: '',

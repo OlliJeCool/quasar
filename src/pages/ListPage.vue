@@ -35,13 +35,13 @@
       {{ names.name }}
     </h5>
     <div v-if="names.name !== 'MainList' && names.name !== 'CompletedList'">
-      <q-btn @click="deleteTask(names.id)" color="red" icon="delete">Delete</q-btn>
+      <q-btn @click="deleteList(names.id)" color="red" icon="delete">Delete</q-btn>
+    </div>
+    <div v-for="task in taskslist[names.id]" :key="task.id">
+    {{ task.name }}
     </div>
     <div class="q-pa-md" style="max-width: 100%">
     <q-list bordered class="rounded-borders">
-      <div v-for="task in loadTasks(names.id)" :key="task.id">
-        {{ task.name }}
-      </div>
       </q-list>
       </div>
   </div>
@@ -51,20 +51,17 @@
 export default {
   mounted () {
     this.getLists()
+    this.GetTasks()
   },
   updated () {
     this.getLists()
+    this.getTasks()
   },
   methods: {
     async getLists () {
       const listnames = await this.$axios.get('https://localhost:7096/List/getAll')
       console.log(listnames.data)
       this.listnames = listnames.data
-    },
-    async loadTasks (input) {
-      const lists = await this.$axios.get('https://localhost:7096/List/getlist/' + input)
-      console.log(lists.data)
-      return lists.data
     },
     async createList () {
       await this.$axios.post('https://localhost:7096/List/create', {
@@ -77,13 +74,24 @@ export default {
       await this.$axios.post('https://localhost:7096/List/delete', {
         id: input
       })
-      this.getLists()
+    },
+    async getTasks () {
+      const lists = await this.$axios.get('https://localhost:7096/List/getAll')
+      for (let i = 0; i < lists.data.length; i++) {
+        const tasks = await this.$axios.get('https://localhost:7096/List/getlist/' + lists.data[i].id)
+        for (let j = 0; i < tasks.data.length; j++) {
+          this.taskslist[lists.data[i].id] = {
+            id: tasks.data[j].id,
+            name: tasks.data[j].name,
+            description: tasks.data[j].description
+          }
+        }
+      }
     }
   },
   data () {
     return {
       listnames: '',
-      lists: '',
       newlist: { name: '' },
       created: false
     }
