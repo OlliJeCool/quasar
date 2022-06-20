@@ -53,12 +53,12 @@
             Description: {{ task.description }}
           </q-card-section>
           <q-card-section>
-            <q-fab padding="8px" color="secondary" push icon="keyboard_arrow_right" direction="right">
-              <q-fab-action color="primary" @click="completeTask(task.id)" icon="done" />
+            <q-fab padding="8px" color="primary" push icon="keyboard_arrow_right" direction="right">
+              <q-fab-action color="green" @click="completeTask(task.id)" icon="done" />
               <q-fab-action color="red" @click="deleteTask(task.id)" icon="delete" />
             </q-fab>
-            <div style="margin-left: 1700px;">
-              <q-btn-dropdown width="50px" color="primary" label="Add to list" align="right" autoclose="true">
+            <div style="margin-left: 1050px;">
+              <q-btn-dropdown width="50px" color="primary" label="Add to list" autoclose="true">
                 <q-list>
                   <div v-for="list in lists" :key="list.id">
                     <q-item clickable v-close-popup @click="addToList(task.id, list.id)">
